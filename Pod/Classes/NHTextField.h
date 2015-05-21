@@ -26,6 +26,11 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 - (void)nhTextField:(NHTextField*)textField
        didSelectRow:(NSInteger)row
         inComponent:(NSInteger)component;
+
+- (NSInteger)numberOfComponentsInNHTextField:(NHTextField *)textField;
+- (NSInteger)nhTextField:(NHTextField *)textField numberOfRowsInComponent:(NSInteger)component;
+- (UIView*)nhTextField:(NHTextField *)textField viewForRow:(NSInteger)row andComponent:(NSInteger)component;
+- (NSString*)nhTextField:(NHTextField *)textField titleForSelectedRow:(NSInteger)row andComponent:(NSInteger)component;
 @end
 
 @interface NHTextField : UITextField
@@ -37,6 +42,8 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 @property (nonatomic, copy) NSArray* pickerTitlesArray;
 @property (nonatomic, assign) NSInteger pickerSelectedComponent;
 @property (nonatomic, assign) NSInteger pickerSelectedRow;
+@property (nonatomic, strong) UIFont *pickerLabelTextFont;
+@property (nonatomic, strong) UIColor *pickerLabelTextColor;
 
 @property (nonatomic, assign) UIDatePickerMode datePickerMode;
 

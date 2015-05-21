@@ -64,9 +64,6 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
                                      queue:nil
                                      usingBlock:^(NSNotification *note) {
                                          __strong __typeof(weakSelf) strongSelf = weakSelf;
-
-                                         NSLog(@"did start");
-
                                          [strongSelf didStartEditing];
     }];
 }
@@ -203,6 +200,17 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
     [self resetTextUsingPickerTitles];
 }
 
+- (void)setNhDelegate:(id<NHTextFieldDelegate>)nhDelegate {
+    [self willChangeValueForKey:@"nhDelegate"];
+    _nhDelegate = nhDelegate;
+    [self didChangeValueForKey:@"nhDelegate"];
+
+    if ([self.pickerInputViewContainer isKindOfClass:[UIPickerView class]]) {
+        [((UIPickerView*)self.pickerInputViewContainer) reloadAllComponents];
+        [self resetTextUsingPickerTitles];
+    }
+}
+
 //MARK: text field view helpers
 - (void)didStartEditing {
     if ([self.pickerInputViewContainer isKindOfClass:[UIPickerView class]]) {
@@ -218,7 +226,13 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
         return;
     }
 
-    self.text = @"";
+    NSString *returnValue = nil;
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhTextField:titleForSelectedRow:andComponent:)]) {
+        returnValue = [weakSelf.nhDelegate nhTextField:weakSelf titleForSelectedRow:weakSelf.pickerSelectedRow andComponent:weakSelf.pickerSelectedComponent];
+    }
+
+    self.text = returnValue;
 }
 
 - (NSString*)getTextFromPickerTitlesAtIndex:(NSInteger)index {
@@ -244,7 +258,10 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 //MARK: Picker view delegate and data source
 
 - (BOOL)hasCustomPicker {
-    return NO;
+    return [self.nhDelegate respondsToSelector:@selector(numberOfComponentsInNHTextField:)]
+    || [self.nhDelegate respondsToSelector:@selector(nhTextField:numberOfRowsInComponent:)]
+    || [self.nhDelegate respondsToSelector:@selector(nhTextField:viewForRow:andComponent:)]
+    || [self.nhDelegate respondsToSelector:@selector(nhTextField:titleForSelectedRow:andComponent:)];
 }
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
@@ -253,7 +270,13 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
         return 1;
     }
 
-    return 0;
+    NSInteger returnValue = 1;
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(numberOfComponentsInNHTextField:)]) {
+        returnValue = [weakSelf.nhDelegate numberOfComponentsInNHTextField:weakSelf];
+    }
+
+    return returnValue;
 }
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
@@ -262,16 +285,36 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
         return self.pickerTitlesArray.count;
     }
 
-    return 0;
-}
-
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-
-    if (![self hasCustomPicker]) {
-        return [self getTextFromPickerTitlesAtIndex:row];
+    NSInteger returnValue = 0;
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhTextField:numberOfRowsInComponent:)]) {
+        returnValue = [weakSelf.nhDelegate nhTextField:weakSelf numberOfRowsInComponent:component];
     }
 
-    return nil;
+    return returnValue;
+}
+
+- (UIView *)pickerView:(UIPickerView *)pickerView
+            viewForRow:(NSInteger)row
+          forComponent:(NSInteger)component
+           reusingView:(UIView *)view {
+    if (![self hasCustomPicker]) {
+        UILabel *resultView = [[UILabel alloc] init];
+        resultView.textAlignment = NSTextAlignmentCenter;
+        resultView.font = self.pickerLabelTextFont ?: [UIFont systemFontOfSize:17];
+        resultView.textColor = self.pickerLabelTextColor ?: [UIColor blackColor];
+        resultView.text = [self getTextFromPickerTitlesAtIndex:row];
+
+        return resultView;
+    }
+
+    UIView *returnValue = nil;
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhTextField:viewForRow:andComponent:)]) {
+        returnValue = [weakSelf.nhDelegate nhTextField:weakSelf viewForRow:row andComponent:component];
+    }
+
+    return returnValue;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView
