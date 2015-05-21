@@ -66,6 +66,8 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
                                          __strong __typeof(weakSelf) strongSelf = weakSelf;
 
                                          NSLog(@"did start");
+
+                                         [strongSelf didStartEditing];
     }];
 }
 
@@ -136,8 +138,11 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
                                initWithFrame:(CGRect) {
                                    .size.height = kNHTextFieldKeyboardHeight
                                }];
-//            ((UIPickerView*)newInputSubview).delegate = self;
-//            ((UIPickerView*)newInputSubview).dataSource = self;
+            ((UIPickerView*)newInputSubview).delegate = self;
+            ((UIPickerView*)newInputSubview).dataSource = self;
+            self.pickerSelectedComponent = 0;
+            self.pickerSelectedRow = 0;
+            [self resetTextUsingPickerTitles];
         } break;
         case NHTextFieldKeyboardTypeDatePicker:
             newInputSubview = [[UIDatePicker alloc]
@@ -162,6 +167,113 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
     if ([self.pickerInputViewContainer isKindOfClass:[UIDatePicker class]]) {
         ((UIDatePicker*)self.pickerInputViewContainer).datePickerMode = datePickerMode;
     }
+}
+
+- (void)setPickerTitlesArray:(NSArray *)pickerTextArray {
+    [self willChangeValueForKey:@"pickerTitlesArray"];
+    _pickerTitlesArray = pickerTextArray;
+    [self didChangeValueForKey:@"pickerTitlesArray"];
+
+    if ([self.pickerInputViewContainer isKindOfClass:[UIPickerView class]]) {
+        [((UIPickerView*)self.pickerInputViewContainer) reloadAllComponents];
+        [self resetTextUsingPickerTitles];
+    }
+}
+
+- (void)setPickerSelectedComponent:(NSInteger)pickerSelectedComponent {
+    if (_pickerSelectedComponent == pickerSelectedComponent) {
+        return;
+    }
+
+    [self willChangeValueForKey:@"pickerSelectedComponent"];
+    _pickerSelectedComponent = pickerSelectedComponent;
+    [self didChangeValueForKey:@"pickerSelectedComponent"];
+
+    [self resetTextUsingPickerTitles];
+}
+- (void)setPickerSelectedRow:(NSInteger)pickerSelectedRow {
+    if (_pickerSelectedRow == pickerSelectedRow) {
+        return;
+    }
+
+    [self willChangeValueForKey:@"pickerSelectedRow"];
+    _pickerSelectedRow = pickerSelectedRow;
+    [self didChangeValueForKey:@"pickerSelectedRow"];
+
+    [self resetTextUsingPickerTitles];
+}
+
+//MARK: text field view helpers
+- (void)didStartEditing {
+    if ([self.pickerInputViewContainer isKindOfClass:[UIPickerView class]]) {
+        [((UIPickerView*)self.pickerInputViewContainer) selectRow:self.pickerSelectedRow
+                                                            inComponent:self.pickerSelectedComponent
+                                                               animated:NO];
+    }
+}
+
+- (void)resetTextUsingPickerTitles {
+    if (![self hasCustomPicker]) {
+        self.text = [self getTextFromPickerTitlesAtIndex:self.pickerSelectedRow];
+        return;
+    }
+
+    self.text = @"";
+}
+
+- (NSString*)getTextFromPickerTitlesAtIndex:(NSInteger)index {
+    id value = self.pickerTitlesArray[index];
+    NSString *title;
+
+    if ([value isKindOfClass:[NSString class]]) {
+        title = value;
+    }
+    else if ([value isKindOfClass:[NSNumber class]]) {
+        title = [((NSNumber*)value) stringValue];
+    }
+    else {
+        title = @"";
+    }
+
+    return title;
+}
+//MARK: Picker view delegate and data source
+
+- (BOOL)hasCustomPicker {
+    return NO;
+}
+
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+
+    if (![self hasCustomPicker]) {
+        return 1;
+    }
+
+    return 0;
+}
+
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+
+    if (![self hasCustomPicker]) {
+        return self.pickerTitlesArray.count;
+    }
+
+    return 0;
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    if (![self hasCustomPicker]) {
+        return [self getTextFromPickerTitlesAtIndex:row];
+    }
+
+    return 0;
+}
+
+- (void)pickerView:(UIPickerView *)pickerView
+      didSelectRow:(NSInteger)row
+       inComponent:(NSInteger)component {
+    self.pickerSelectedComponent = component;
+    self.pickerSelectedRow = row;
 }
 
 - (void)dealloc {

@@ -29,7 +29,10 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 
 @property (nonatomic, assign) NHTextFieldKeyboardType nhKeyboardType;
 
-@property (nonatomic, copy) NSArray* pickerTextArray;
+@property (nonatomic, copy) NSArray* pickerTitlesArray;
+@property (nonatomic, assign) NSInteger pickerSelectedComponent;
+@property (nonatomic, assign) NSInteger pickerSelectedRow;
+
 @property (nonatomic, assign) UIDatePickerMode datePickerMode;
 
 @property (nonatomic, assign) CGRect caretRect;

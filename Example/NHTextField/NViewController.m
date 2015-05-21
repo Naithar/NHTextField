@@ -23,9 +23,9 @@
     [[NHTextField alloc] init];
 	// Do any additional setup after loading the view, typically from a nib.
     self.textField.caretSize = CGSizeMake(5, kNHTextFieldDefaultCaretSize);
-    self.textField.nhKeyboardType = NHTextFieldKeyboardTypeDatePicker;
+    self.textField.nhKeyboardType = NHTextFieldKeyboardTypePicker;
     self.textField.datePickerMode = UIDatePickerModeDate;
-    self.textField.pickerTextArray = @[@"1", @"2", @"3", @"4", @"5"];
+    self.textField.pickerTitlesArray = @[@"1", @"2", @"3", @"4", @"5"];
 }
 
 - (void)didReceiveMemoryWarning
