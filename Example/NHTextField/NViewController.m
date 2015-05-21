@@ -7,8 +7,10 @@
 //
 
 #import "NViewController.h"
+#import <NHTextField.h>
 
 @interface NViewController ()
+@property (strong, nonatomic) IBOutlet NHTextField *textField;
 
 @end
 
@@ -17,7 +19,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    [[NHTextField alloc] init];
 	// Do any additional setup after loading the view, typically from a nib.
+    self.textField.caretSize = CGSizeMake(5, kNHTextFieldDefaultCaretSize);
+    self.textField.nhKeyboardType = NHTextFieldKeyboardTypeDatePicker;
+    self.textField.datePickerMode = UIDatePickerModeDate;
+    self.textField.pickerTextArray = @[@"1", @"2", @"3", @"4", @"5"];
 }
 
 - (void)didReceiveMemoryWarning
