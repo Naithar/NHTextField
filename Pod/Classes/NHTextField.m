@@ -222,6 +222,10 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 }
 
 - (NSString*)getTextFromPickerTitlesAtIndex:(NSInteger)index {
+    if (index >= self.pickerTitlesArray.count) {
+        return nil;
+    }
+
     id value = self.pickerTitlesArray[index];
     NSString *title;
 
@@ -262,11 +266,12 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+
     if (![self hasCustomPicker]) {
         return [self getTextFromPickerTitlesAtIndex:row];
     }
 
-    return 0;
+    return nil;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView
@@ -274,6 +279,16 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
        inComponent:(NSInteger)component {
     self.pickerSelectedComponent = component;
     self.pickerSelectedRow = row;
+
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhTextField:didSelectRow:inComponent:)]) {
+        [weakSelf.nhDelegate nhTextField:weakSelf
+                            didSelectRow:weakSelf.pickerSelectedRow
+                             inComponent:weakSelf.pickerSelectedComponent];
+    }
+
+    [self resetTextUsingPickerTitles];
+
 }
 
 - (void)dealloc {

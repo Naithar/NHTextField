@@ -21,6 +21,11 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 
 @protocol NHTextFieldDelegate <NSObject>
 
+
+@optional
+- (void)nhTextField:(NHTextField*)textField
+       didSelectRow:(NSInteger)row
+        inComponent:(NSInteger)component;
 @end
 
 @interface NHTextField : UITextField
