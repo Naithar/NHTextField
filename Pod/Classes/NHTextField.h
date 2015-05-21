@@ -31,6 +31,9 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 - (NSInteger)nhTextField:(NHTextField *)textField numberOfRowsInComponent:(NSInteger)component;
 - (UIView*)nhTextField:(NHTextField *)textField viewForRow:(NSInteger)row andComponent:(NSInteger)component;
 - (NSString*)nhTextField:(NHTextField *)textField titleForSelectedRow:(NSInteger)row andComponent:(NSInteger)component;
+
+
+- (void)nhTextField:(NHTextField*)textField didChangeDateTo:(NSDate*)date;
 @end
 
 @interface NHTextField : UITextField
@@ -39,6 +42,8 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 
 @property (nonatomic, assign) NHTextFieldKeyboardType nhKeyboardType;
 
+@property (nonatomic, readonly, strong) UIView *pickerInputViewContainer;
+
 @property (nonatomic, copy) NSArray* pickerTitlesArray;
 @property (nonatomic, assign) NSInteger pickerSelectedComponent;
 @property (nonatomic, assign) NSInteger pickerSelectedRow;
@@ -46,6 +51,12 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 @property (nonatomic, strong) UIColor *pickerLabelTextColor;
 
 @property (nonatomic, assign) UIDatePickerMode datePickerMode;
+@property (nonatomic, assign) NSDateFormatterStyle datePickerDateStyle;
+@property (nonatomic, assign) NSDateFormatterStyle datePickerTimeStyle;
+@property (nonatomic, strong) NSTimeZone *datePickerTimeZone;
+@property (nonatomic, strong) NSDate *selectedDate;
+@property (nonatomic, strong) NSDate *maxDate;
+@property (nonatomic, strong) NSDate *minDate;
 
 @property (nonatomic, assign) CGRect caretRect;
 @property (nonatomic, assign) CGSize caretSize;
