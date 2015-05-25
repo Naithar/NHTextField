@@ -424,7 +424,7 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
        inComponent:(NSInteger)component {
 
     if (self.pickerSelectedRow != row
-        && self.pickerSelectedComponent != component) {
+        || self.pickerSelectedComponent != component) {
         self.pickerSelectedComponent = component;
         self.pickerSelectedRow = row;
 
