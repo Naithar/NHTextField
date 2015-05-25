@@ -72,7 +72,7 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
                                      usingBlock:^(NSNotification *note) {
                                          __strong __typeof(weakSelf) strongSelf = weakSelf;
                                          [strongSelf didStartEditing];
-    }];
+                                     }];
 }
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position {
@@ -89,10 +89,10 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 
         resultCaretRect.origin.x += self.caretOffset.x;
         resultCaretRect.origin.y += self.caretOffset.y;
-        
+
         return resultCaretRect;
     }
-    
+
     return self.caretRect;
 }
 
@@ -126,8 +126,8 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 - (void)rebuildInputView {
 
     if ([self.pickerInputViewContainer isKindOfClass:[UIDatePicker class]]) {
-//        [((UIDatePicker*)self.pickerInputViewContainer) removeObserver:self
-//                                                            forKeyPath:@"date"];
+        //        [((UIDatePicker*)self.pickerInputViewContainer) removeObserver:self
+        //                                                            forKeyPath:@"date"];
         [((UIDatePicker*)self.pickerInputViewContainer) removeTarget:self
                                                               action:@selector(dateChanged:)
                                                     forControlEvents:UIControlEventValueChanged];
@@ -308,8 +308,8 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 - (void)didStartEditing {
     if ([self.pickerInputViewContainer isKindOfClass:[UIPickerView class]]) {
         [((UIPickerView*)self.pickerInputViewContainer) selectRow:self.pickerSelectedRow
-                                                            inComponent:self.pickerSelectedComponent
-                                                               animated:NO];
+                                                      inComponent:self.pickerSelectedComponent
+                                                         animated:NO];
     }
     else if ([self.pickerInputViewContainer isKindOfClass:[UIDatePicker class]]) {
         [((UIDatePicker*)self.pickerInputViewContainer) setDate:self.selectedDate animated:NO];
@@ -422,17 +422,21 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 - (void)pickerView:(UIPickerView *)pickerView
       didSelectRow:(NSInteger)row
        inComponent:(NSInteger)component {
-    self.pickerSelectedComponent = component;
-    self.pickerSelectedRow = row;
 
-    __weak __typeof(self) weakSelf = self;
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhTextField:didSelectRow:inComponent:)]) {
-        [weakSelf.nhDelegate nhTextField:weakSelf
-                            didSelectRow:weakSelf.pickerSelectedRow
-                             inComponent:weakSelf.pickerSelectedComponent];
+    if (self.pickerSelectedRow != row
+        && self.pickerSelectedComponent != component) {
+        self.pickerSelectedComponent = component;
+        self.pickerSelectedRow = row;
+
+        __weak __typeof(self) weakSelf = self;
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhTextField:didSelectRow:inComponent:)]) {
+            [weakSelf.nhDelegate nhTextField:weakSelf
+                                didSelectRow:weakSelf.pickerSelectedRow
+                                 inComponent:weakSelf.pickerSelectedComponent];
+        }
+
+        [self resetTextUsingPickerTitles];
     }
-
-    [self resetTextUsingPickerTitles];
 
 }
 
@@ -452,12 +456,7 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 }
 
 - (void)dealloc {
-
-//    if ([self.pickerInputViewContainer isKindOfClass:[UIDatePicker class]]) {
-//        [((UIDatePicker*)self.pickerInputViewContainer) removeObserver:self
-//                                                            forKeyPath:@"date"];
-//    }
-
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self.startEditingNotification];
     self.inputView = nil;
     self.delegate = nil;
