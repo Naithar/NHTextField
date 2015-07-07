@@ -64,4 +64,6 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 
 @property (nonatomic, assign) BOOL canPerform;
 
+- (void)resetText;
+- (void)resetTextAnimated:(BOOL)animated;
 @end

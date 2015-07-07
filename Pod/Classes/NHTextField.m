@@ -24,11 +24,11 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 //
 //- (instancetype)init {
 //    self = [super init];
-//    
+//
 //    if (self) {
 //        [self commonInit];
 //    }
-//    
+//
 //    return self;
 //}
 
@@ -312,13 +312,23 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
 
 //MARK: text field view helpers
 - (void)didStartEditing {
+    [self resetText];
+}
+
+- (void)resetText {
+    [self resetTextAnimated:NO];
+}
+- (void)resetTextAnimated:(BOOL)animated {
     if ([self.pickerInputViewContainer isKindOfClass:[UIPickerView class]]) {
         [((UIPickerView*)self.pickerInputViewContainer) selectRow:self.pickerSelectedRow
                                                       inComponent:self.pickerSelectedComponent
-                                                         animated:NO];
+                                                         animated:animated];
     }
     else if ([self.pickerInputViewContainer isKindOfClass:[UIDatePicker class]]) {
-        [((UIDatePicker*)self.pickerInputViewContainer) setDate:self.selectedDate animated:NO];
+        if (!self.selectedDate) {
+            self.selectedDate = [NSDate new];
+        }
+        [((UIDatePicker*)self.pickerInputViewContainer) setDate:self.selectedDate animated:animated];
     }
 }
 
