@@ -173,6 +173,7 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
             ((UIDatePicker*)newInputSubview).date = self.selectedDate ?: [NSDate date];
             ((UIDatePicker*)newInputSubview).minimumDate = self.minDate;
             ((UIDatePicker*)newInputSubview).maximumDate = self.maxDate;
+            ((UIDatePicker*)newInputSubview).timeZone = self.datePickerTimeZone ?: [NSTimeZone timeZoneForSecondsFromGMT:0];
             [((UIDatePicker*)newInputSubview) addTarget:self
                                                  action:@selector(dateChanged:)
                                        forControlEvents:UIControlEventValueChanged];
@@ -297,6 +298,10 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
     [self didChangeValueForKey:@"datePickerTimeZone"];
     
     self.pickerDateFormatter.timeZone = datePickerTimeZone ?: [NSTimeZone timeZoneForSecondsFromGMT:0];
+    
+    if ([self.pickerInputViewContainer isKindOfClass:[UIDatePicker class]]) {
+        ((UIDatePicker*)self.pickerInputViewContainer).timeZone = datePickerTimeZone ?: [NSTimeZone timeZoneForSecondsFromGMT:0];
+    }
 }
 
 - (void)setNhDelegate:(id<NHTextFieldDelegate>)nhDelegate {
