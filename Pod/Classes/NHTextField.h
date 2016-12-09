@@ -62,6 +62,8 @@ typedef NS_ENUM(NSUInteger, NHTextFieldKeyboardType) {
 @property (nonatomic, assign) CGSize caretSize;
 @property (nonatomic, assign) CGPoint caretOffset;
 
+@property (nonatomic, assign) UIEdgeInsets textInsets;
+
 @property (nonatomic, assign) BOOL canPerform;
 
 - (void)resetText;
