@@ -75,6 +75,14 @@ const CGFloat kNHTextFieldKeyboardHeight = 216;
                                      }];
 }
 
+- (CGRect)textRectForBounds:(CGRect)bounds {
+     return [super textRectForBounds:UIEdgeInsetsInsetRect(bounds, self.textInsets)];
+}
+
+- (CGRect)editingRectForBounds:(CGRect)bounds {
+     return [super editingRectForBounds:UIEdgeInsetsInsetRect(bounds, self.textInsets)];
+}
+
 - (CGRect)caretRectForPosition:(UITextPosition *)position {
     if (CGRectIsNull(self.caretRect)) {
         CGRect resultCaretRect = [super caretRectForPosition:position];
